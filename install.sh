@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-#  CoinEx 话术备份 — 一行命令部署脚本
+#  话术备份 — 一行命令部署脚本
 #  用法（发布到 GitHub 后）：
 #    curl -fsSL https://raw.githubusercontent.com/<用户>/<仓库>/main/install.sh | bash
 #  或本地直接：
@@ -30,15 +30,43 @@ REPO_URL="${HUASHU_REPO_URL:-https://github.com/BlizzardSaber/huashu-backup.git}
 INSTALL_DIR="${HUASHU_INSTALL_DIR:-$HOME/huashu-backup}"
 BRANCH="${HUASHU_BRANCH:-main}"
 
-# ---------- 1. 环境检测 ----------
+# ---------- 1. 环境检测（缺失依赖自动安装） ----------
 title() { printf "\n${GREEN}======== %s ========${NC}\n" "$*"; }
 
-title "第 1 步：环境检测"
+title "第 1 步：环境检测（缺失依赖自动安装）"
 [[ "$(uname -s)" == "Darwin" || "$(uname -s)" == "Linux" ]] || die "仅支持 macOS / Linux。"
 
-command -v python3 >/dev/null 2>&1 || die "未检测到 python3，请先安装 Python 3.8+。"
-command -v pip3   >/dev/null 2>&1 || die "未检测到 pip3，请先安装 pip。"
-command -v git    >/dev/null 2>&1 || die "未检测到 git，请先安装 git。"
+MISSING=()
+command -v python3  >/dev/null 2>&1 || MISSING+=(python3)
+command -v pip3     >/dev/null 2>&1 || MISSING+=(pip3)
+command -v git      >/dev/null 2>&1 || MISSING+=(git)
+command -v crontab  >/dev/null 2>&1 || MISSING+=(crontab)
+
+if [ ${#MISSING[@]} -gt 0 ]; then
+    info "检测到缺少依赖: ${MISSING[*]}，尝试自动安装 ..."
+    if [ "$(uname -s)" == "Linux" ] && command -v apt-get >/dev/null 2>&1; then
+        # Ubuntu / Debian：apt 自动安装（python3-venv 在 Debian 系是独立拆包，必须一起装）
+        SUDO=""
+        if [ "$(id -u)" -ne 0 ]; then
+            command -v sudo >/dev/null 2>&1 \
+                || die "缺少 ${MISSING[*]} 且无 sudo 权限。请手动执行: apt-get install -y python3 python3-pip python3-venv git cron"
+            SUDO="sudo"
+        fi
+        $SUDO apt-get update -y
+        $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip python3-venv git cron
+    elif [ "$(uname -s)" == "Darwin" ]; then
+        command -v brew >/dev/null 2>&1 \
+            || die "缺少 ${MISSING[*]}。macOS 请先安装 Homebrew（https://brew.sh）后执行: brew install python git"
+        brew install python git   # crontab macOS 系统自带
+    else
+        die "当前系统缺少 ${MISSING[*]} 且无法自动安装，请手动安装后重试。"
+    fi
+fi
+
+# 安装后复检（任一仍缺失则给出明确指引）
+command -v python3 >/dev/null 2>&1 || die "python3 不可用。请手动安装 Python 3.8+ 后重试。"
+command -v pip3   >/dev/null 2>&1 || die "pip3 不可用。请手动安装（如 apt-get install -y python3-pip）。"
+command -v git    >/dev/null 2>&1 || die "git 不可用。请手动安装（如 apt-get install -y git）。"
 if ! command -v crontab >/dev/null 2>&1; then
     warn "未检测到 crontab，定时任务将无法安装。（macOS 需在系统设置中授予「完全磁盘访问权限」）"
 fi
@@ -56,12 +84,12 @@ if [[ "$(uname -s)" == "Linux" ]]; then
         CURRENT_TZ="$(cat /etc/timezone 2>/dev/null || true)"
     fi
     if [[ "$CURRENT_TZ" == "$DESIRED_TZ" ]]; then
-        ok "时区已是 $DESIRED_TZ（北京时间），cron 将按本地时区触发。"
+        ok "时区已是 ${DESIRED_TZ}（北京时间），cron 将按本地时区触发。"
     else
         info "当前时区：${CURRENT_TZ:-未知}，设置为 $DESIRED_TZ ..."
         if command -v timedatectl >/dev/null 2>&1; then
             if timedatectl set-timezone "$DESIRED_TZ"; then
-                ok "时区已设为 $DESIRED_TZ（$(date +%Z), $(date +%:z)）"
+                ok "时区已设为 ${DESIRED_TZ}（$(date +%Z), $(date +%:z)）"
             else
                 warn "timedatectl 设置失败（可能非 root）。cron 将以服务器当前时区为准。"
             fi
@@ -69,7 +97,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
             # 老系统兜底：用 /etc/localtime 软链
             if ln -sf "/usr/share/zoneinfo/$DESIRED_TZ" /etc/localtime 2>/dev/null \
                && echo "$DESIRED_TZ" > /etc/timezone 2>/dev/null; then
-                ok "时区已设为 $DESIRED_TZ（$(date +%Z)）"
+                ok "时区已设为 ${DESIRED_TZ}（$(date +%Z)）"
             else
                 warn "无法自动设置时区。cron 将以服务器当前时区为准。"
             fi
@@ -123,12 +151,12 @@ INSTALL_RC=$?
 set -e
 
 if [ "$INSTALL_RC" -ne 0 ]; then
-    die "依赖安装失败（退出码 $INSTALL_RC）。可手动重试: $PY -m pip install openpyxl requests"
+    die "依赖安装失败（退出码 ${INSTALL_RC}）。可手动重试: $PY -m pip install openpyxl requests"
 fi
 
 # 确认依赖可用
 "$PY" -c "import openpyxl, requests" 2>/dev/null || die "依赖导入失败，请检查虚拟环境: $VENV_DIR"
-ok "依赖安装完成（隔离在 $VENV_DIR，不污染系统）"
+ok "依赖安装完成（隔离在 ${VENV_DIR}，不污染系统）"
 
 # ---------- 4. 交互式生成配置 ----------
 title "第 4 步：配置（密钥仅写入本地 config.json，不上传）"
@@ -153,10 +181,10 @@ prompt_secret() { # 隐藏输入
 
 echo
 echo "${BLUE}--- Zendesk 认证 ---${NC}"
+prompt "Zendesk 站点地址（形如 https://你的子域.zendesk.com）" "https://your-subdomain.zendesk.com"; ZD_BASE="$REPLY"
 prompt "Zendesk 邮箱" "your_zendesk_email@example.com"; ZD_EMAIL="$REPLY"
 prompt_secret "Zendesk API Token"; ZD_TOKEN="$REPLY"
 [[ -z "$ZD_TOKEN" ]] && die "API Token 不能为空。"
-ZD_BASE="https://coinex.zendesk.com"
 
 echo
 echo "${BLUE}--- 发件邮箱（SMTP）---${NC}"
@@ -234,7 +262,7 @@ cat <<EOF
 ${GREEN}部署成功！${NC}
 
   安装目录 : $INSTALL_DIR
-  配置文件 : $CONFIG_FILE（含密钥，勿外传）
+  配置文件 : ${CONFIG_FILE}（含密钥，勿外传）
   虚拟环境 : $VENV_DIR
   运行日志 : $LOG_FILE
 

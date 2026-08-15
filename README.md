@@ -1,6 +1,6 @@
 # 话术备份自动推送 📧
 
-每月自动从 Zendesk 拉取 CoinEx 客服话术库，生成 Excel 表格，通过邮件推送到指定收件人。
+每月自动从 Zendesk 拉取客服话术库，生成 Excel 表格，通过邮件推送到指定收件人。
 支持 **一行命令部署**、**收发件人/密钥/时间全可配置**、**无需重启即时生效**。
 
 ---
@@ -19,7 +19,7 @@
 
 ## 🚀 一行命令部署
 
-在你的服务器上执行（需联网、有 `python3` 和 `git`）：
+在你的服务器上执行（需联网；`python3` / `pip3` / `git` / `cron` 缺失时脚本会自动安装，Ubuntu/Debian 走 apt，macOS 需已装 Homebrew）：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/BlizzardSaber/huashu-backup/main/install.sh | bash
@@ -110,7 +110,7 @@ huashu-backup/
 
 ```json
 {
-  "zendesk":  { "email": "...", "api_token": "...", "base_url": "https://coinex.zendesk.com" },
+  "zendesk":  { "email": "...", "api_token": "...", "base_url": "https://your-subdomain.zendesk.com" },
   "smtp":     { "host": "...", "port": 465, "use_ssl": true, "username": "...", "password": "...", "from_name": "话术备份机器人" },
   "recipients": ["a@example.com", "b@example.com"],
   "schedule": { "day_of_month": 1, "hour": 9, "minute": 0 }
@@ -124,7 +124,7 @@ huashu-backup/
 ## 🔧 系统要求
 
 - Linux 或 macOS（服务器 / Mac 均可）
-- Python 3.8+、pip3、git、cron
+- Python 3.8+、pip3、git、cron —— **缺失时 `install.sh` 会自动安装**（Ubuntu/Debian 通过 apt；macOS 通过 Homebrew，需先装好 brew）
 - 能访问 Zendesk API 和目标 SMTP 服务器
 - 内存 256MB+ 足矣
 

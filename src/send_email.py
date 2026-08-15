@@ -115,11 +115,11 @@ def build_default_body(count: int, stamp: str | None = None,
     """
     now = stamp or datetime.now().strftime("%Y-%m-%d")
     prefix = "【测试】" if is_test else ""
-    subject = f"{prefix}CoinEx 话术数据月度备份 ({now})"
+    subject = f"{prefix}话术数据月度备份 ({now})"
     body = "\n".join([
         "您好，",
         "",
-        f"这是 CoinEx 客服话术库的月度自动备份，本期共 {count} 条话术，生成时间 {now}。",
+        f"这是客服话术库的月度自动备份，本期共 {count} 条话术，生成时间 {now}。",
         "详细数据见附件 XLSX 表格。",
         "",
         "—— 话术备份机器人（自动发送，请勿直接回复）",

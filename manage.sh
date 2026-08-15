@@ -17,7 +17,7 @@ ok()    { printf "${GREEN}[成功]${NC} %s\n" "$*"; }
 warn()  { printf "${YELLOW}[警告]${NC} %s\n" "$*"; }
 die()   { printf "${RED}[错误]${NC} %s\n" "$*"; exit 1; }
 
-[[ -f "$CONFIG" ]] || die "未找到配置文件 $CONFIG，请先运行 ./install.sh"
+[[ -f "$CONFIG" ]] || die "未找到配置文件 ${CONFIG}，请先运行 ./install.sh"
 
 # 用 python 操作 config.json（保证 JSON 正确 + 校验邮箱）
 py_json() { # 任意 python 代码段，config 路径作为第一个参数

@@ -69,7 +69,7 @@ def run(test: bool = False) -> int:
         rows = fetch_macros.fetch_all_macros(
             email=zd["email"],
             api_token=zd["api_token"],
-            base_url=zd.get("base_url", "https://coinex.zendesk.com"),
+            base_url=zd.get("base_url", "https://your-subdomain.zendesk.com"),
             progress_writer=lambda msg: log.info(msg),
         )
     except Exception as e:

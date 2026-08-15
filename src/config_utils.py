@@ -24,7 +24,7 @@ DEFAULTS: dict[str, Any] = {
     "zendesk": {
         "email": "",
         "api_token": "",
-        "base_url": "https://coinex.zendesk.com",
+        "base_url": "https://your-subdomain.zendesk.com",
     },
     "smtp": {
         "host": "",

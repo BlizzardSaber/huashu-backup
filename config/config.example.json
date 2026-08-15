@@ -2,7 +2,7 @@
   "zendesk": {
     "email": "your_zendesk_email@example.com",
     "api_token": "your_zendesk_api_token",
-    "base_url": "https://coinex.zendesk.com"
+    "base_url": "https://your-subdomain.zendesk.com"
   },
   "smtp": {
     "host": "smtp.qq.com",

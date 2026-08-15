@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CoinEx 话术获取脚本
+# 话术获取脚本
 # 功能：从 Zendesk API 获取话术数据并输出为 CSV 表格
 
 # 颜色定义
@@ -14,7 +14,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUTPUT_FILE="${SCRIPT_DIR}/话术数据.csv"
 
 # API URL
-API_URL="https://coinex.zendesk.com/api/v2/macros/active?access=shared&per_page=1000"
+API_URL="https://your-subdomain.zendesk.com/api/v2/macros/active?access=shared&per_page=1000"
 
 # 默认认证信息（已脱敏，真实值请通过 config.json 配置）
 DEFAULT_EMAIL="<your_zendesk_email@example.com>"
@@ -22,7 +22,7 @@ DEFAULT_API_TOKEN="<your_zendesk_api_token>"
 
 # 提示用户输入
 echo "========================================="
-echo "      CoinEx 话术数据获取工具"
+echo "      话术数据获取工具"
 echo "========================================="
 echo ""
 echo "默认邮箱: ${DEFAULT_EMAIL}"
@@ -84,7 +84,7 @@ while true; do
     echo -ne "\r${YELLOW}正在获取第 ${PAGE} 页数据...${NC}"
 
     # 构建带分页参数的 URL
-    PAGE_URL="https://coinex.zendesk.com/api/v2/macros/active?access=shared&per_page=${PER_PAGE}&page=${PAGE}"
+    PAGE_URL="https://your-subdomain.zendesk.com/api/v2/macros/active?access=shared&per_page=${PER_PAGE}&page=${PAGE}"
 
     # 发送 API 请求
     RESPONSE=$(curl -s -w "\n%{http_code}" "$PAGE_URL" \

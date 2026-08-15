@@ -131,7 +131,7 @@ def format_time(time_str: str) -> str:
 # 分页拉取
 # ------------------------------------------------------------------
 def fetch_all_macros(email: str, api_token: str,
-                     base_url: str = "https://coinex.zendesk.com",
+                     base_url: str = "https://your-subdomain.zendesk.com",
                      per_page: int = PER_PAGE,
                      progress_writer=None) -> list[dict]:
     """分页拉取所有 shared macros，返回解析后的统一数据列表。
@@ -199,7 +199,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="拉取 Zendesk 话术并输出 CSV")
     parser.add_argument("--email", required=True, help="Zendesk 邮箱")
     parser.add_argument("--token", required=True, help="Zendesk API Token")
-    parser.add_argument("--base-url", default="https://coinex.zendesk.com")
+    parser.add_argument("--base-url", default="https://your-subdomain.zendesk.com")
     parser.add_argument("--output", "-o", default="-", help="输出 CSV 路径，- 表示 stdout")
     args = parser.parse_args()
 

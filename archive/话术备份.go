@@ -50,7 +50,7 @@ var (
 
 func main() {
 	fmt.Println("=========================================")
-	fmt.Println("      CoinEx 话术数据获取工具")
+	fmt.Println("      话术数据获取工具")
 	fmt.Println("=========================================")
 	fmt.Println()
 
@@ -118,7 +118,7 @@ func main() {
 	for {
 		fmt.Printf("\r%s正在获取第 %d 页数据...%s", Yellow, page, Reset)
 
-		url := fmt.Sprintf("https://coinex.zendesk.com/api/v2/macros?access=shared&per_page=%d&page=%d", perPage, page)
+		url := fmt.Sprintf("https://your-subdomain.zendesk.com/api/v2/macros?access=shared&per_page=%d&page=%d", perPage, page)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {

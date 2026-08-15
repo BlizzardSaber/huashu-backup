@@ -101,7 +101,7 @@ def generate_base64_and_save_js():
 
 # 创建主窗口
 root = tk.Tk()
-root.title("CoinEx身份验证")
+root.title("Zendesk身份验证")
 root.geometry("450x200")
 
 # 账号输入
@@ -125,6 +125,6 @@ result_label = tk.Label(root, text="", fg="blue")
 result_label.pack()
 
 # API URL
-url = "https://coinex.zendesk.com/api/v2/macros/active?access=shared&per_page=1000"
+url = "https://your-subdomain.zendesk.com/api/v2/macros/active?access=shared&per_page=1000"
 
 root.mainloop()

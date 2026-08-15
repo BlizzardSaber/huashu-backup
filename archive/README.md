@@ -6,7 +6,7 @@
 |------|------|
 | `话术备份.go` | Go 版本（原编译产物 `话术备份` 已含硬编码密钥，未纳入仓库） |
 | `话术备份.sh` | Shell 版本（一次性手动拉取，无邮件/cron 功能） |
-| `coinex_auth_improved.py` | 早期 GUI 认证工具（tkinter，桌面用） |
+| `auth_tool_improved.py` | 早期 GUI 认证工具（tkinter，桌面用） |
 
 > ⚠️ 所有文件中的真实邮箱和 API 密钥均已替换为 `<占位符>` 脱敏。
 
